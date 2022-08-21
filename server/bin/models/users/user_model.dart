@@ -34,7 +34,7 @@ class User {
   DateTime? lastSeenAt;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json["id"] == null ? 0 : int.parse(json["id"]),
+        id: json["id"] == null ? 0 : int.parse(json["id"].toString()),
         code: json["code"] == null ? 0 : json["code"],
         name: json["name"] == null ? "" : json["name"],
         email: json["email"] == null ? "" : json["email"],

@@ -8,6 +8,7 @@ class PathRouters {
     var r = Router();
     r.get('/message', MessageRouters.getMessage);
     r.post('/users/register', UserRouters.registerUser);
+    r.post('/users/login', UserRouters.loginUser);
     return r;
   }
 }
