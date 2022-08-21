@@ -11,7 +11,7 @@ class ServerRes<T> {
   T? r;
 
   Map<String, dynamic> toJson() => {'s': s, 'm': m, 'r': r};
-
+  bool get isValid => s == 1;
   ServerRes get errorRes => ServerRes(m: 'Error', s: 0);
   Map<String, dynamic> toErrorJson() => {'s': 0, 'm': 'Error', 'r': r};
 }

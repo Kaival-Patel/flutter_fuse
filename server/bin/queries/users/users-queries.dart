@@ -44,4 +44,39 @@ class UsersQueries {
           m: 'Logged in successfully', s: 1, r: loggedInUser.toJson());
     }
   }
+
+  Future<ServerRes> updateUser({required User user}) async {
+    var r = await Database().connection.query(
+        'UPDATE $userDb SET name=?, photo=? WHERE id = ?',
+        [user.name, user.photo, user.id]);
+    var affectedRows = r.affectedRows ?? 0;
+    if (affectedRows <= 0) {
+      //INCORRECT CREDS
+      return ServerRes(m: 'Failed to update profile');
+    } else {
+      //EXISTS
+      return ServerRes(
+        m: 'User Updated Successfully',
+        s: 1,
+      );
+    }
+  }
+
+  Future<User> getUserFromCode({required String id}) async {
+    var codeInt = int.tryParse(id);
+    if (codeInt != null) {
+      var r = await Database()
+          .connection
+          .query('SELECT * FROM $userDb WHERE id = ? LIMIT 1', [id]);
+      if (r.isEmpty) {
+        //INCORRECT CREDS
+        return User();
+      } else {
+        //EXISTS
+        var loggedInUser = User.fromJson(r.first.fields);
+        return loggedInUser;
+      }
+    }
+    return User();
+  }
 }

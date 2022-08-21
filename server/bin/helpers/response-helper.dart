@@ -10,4 +10,7 @@ class ResponseHelper {
   static String errorRes({required ServerRes res}) {
     return jsonEncode(res.toJson());
   }
+
+  static Map<String, Object>? get jsonHeader =>
+      {'content-type': 'application/json'};
 }
