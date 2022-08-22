@@ -10,6 +10,8 @@ class PathRouters {
     r.get('/message', MessageRouters.getMessage);
     r.post('/users/register', UserRouters.registerUser);
     r.post('/users/login', UserRouters.loginUser);
+    r.post('/users/update', UserRouters.updateUser);
+    r.post('/users/updateOnlineStatus', UserRouters.updateUserTypingStatus);
     r.get('/users/stream', webSocketHandler(UserRouters.streamUser));
     return r;
   }

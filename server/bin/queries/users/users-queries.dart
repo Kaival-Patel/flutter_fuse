@@ -62,6 +62,23 @@ class UsersQueries {
     }
   }
 
+  Future<ServerRes> updateUserOnlineStatus(
+      {required int onlineStatus, required int id}) async {
+    var r = await Database().connection.query(
+        'UPDATE $userDb SET online_status=? WHERE id = ?', [onlineStatus, id]);
+    var affectedRows = r.affectedRows ?? 0;
+    if (affectedRows <= 0) {
+      //INCORRECT CREDS
+      return ServerRes(m: 'Failed to update online Status');
+    } else {
+      //EXISTS
+      return ServerRes(
+        m: 'Online Status Updated Successfully',
+        s: 1,
+      );
+    }
+  }
+
   Future<User> getUserFromCode({required String id}) async {
     var codeInt = int.tryParse(id);
     if (codeInt != null) {
