@@ -35,4 +35,24 @@ class MessageQueries {
       return ServerRes(m: 'Error sending message');
     }
   }
+
+  static Future<ServerRes> getChatList({required int receiverId}) async {
+    try {
+      print(receiverId);
+      var result = await Database().connection.query(
+          'SELECT ${messageDb}.*,${chatDb}.sender,${chatDb}.receiver FROM ${chatDb} INNER JOIN ${messageDb} ON ${messageDb}.id=${chatDb}.message_id WHERE ${chatDb}.receiver = ? GROUP BY ${chatDb}.sender',
+          [receiverId]);
+      var l = result.map((e) {
+        e.fields['created_at'] = e.fields['created_at'].toString();
+        return e.fields;
+      }).toList();
+      l.sort((a, b) =>
+          a['created_at'].toString().compareTo(b['created_at'].toString()));
+      print("CHAT LIST QUERY LIST => $l");
+      return ServerRes(s: 1, m: "Success chat list", r: l);
+    } catch (err) {
+      print(err);
+      return ServerRes().errorRes;
+    }
+  }
 }
