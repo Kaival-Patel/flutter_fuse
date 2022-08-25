@@ -40,14 +40,18 @@ class MessageQueries {
     try {
       print(receiverId);
       var result = await Database().connection.query(
-          'SELECT ${messageDb}.*,${chatDb}.sender,${chatDb}.receiver FROM ${chatDb} INNER JOIN ${messageDb} ON ${messageDb}.id=${chatDb}.message_id WHERE ${chatDb}.receiver = ? GROUP BY ${chatDb}.sender',
+          'SELECT ${messageDb}.*,${chatDb}.sender,${chatDb}.receiver FROM ${chatDb} INNER JOIN ${messageDb} ON ${messageDb}.id=${chatDb}.message_id WHERE ${chatDb}.receiver = ? ORDER BY ${messageDb}.created_at DESC',
           [receiverId]);
-      var l = result.map((e) {
-        e.fields['created_at'] = e.fields['created_at'].toString();
-        return e.fields;
+      Map<int, Map<String, dynamic>> map = {};
+      result.forEach((element) {
+        if (map[int.parse(element.fields['sender'].toString())] == null) {
+          map[int.parse(element.fields['sender'].toString())] = element.fields;
+        }
+      });
+      var l = map.values.map((e) {
+        e['created_at'] = e['created_at'].toString();
+        return e;
       }).toList();
-      l.sort((a, b) =>
-          a['created_at'].toString().compareTo(b['created_at'].toString()));
       print("CHAT LIST QUERY LIST => $l");
       return ServerRes(s: 1, m: "Success chat list", r: l);
     } catch (err) {
