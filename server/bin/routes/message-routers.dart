@@ -29,6 +29,7 @@ class MessageRouters {
       clients.forEach((key, value) {
         if (value.contains(receiver) || value.contains(sender)) {
           sinkChatList(key, receiver);
+          sinkChatMessageList(key, receiver, sender);
         }
       });
       return Response.ok(ResponseHelper.successRes(res: res),
@@ -43,12 +44,21 @@ class MessageRouters {
 
   static streamChat(WebSocketChannel channel) async {
     //ACK
-    channel.sink.add('Chat Connected');
+    channel.sink.add('Chat Message Connected');
 
     //LISTEN FOR PAYLOADS FROM CLIENT
     channel.stream.listen((event) {
-      var sender = int.parse(event['sender'] ?? '0'.toString());
-      var receiver = int.parse(event['receiver'] ?? '0'.toString());
+      var map = jsonDecode(event);
+      var sender = int.parse(map['sender'].toString());
+      var receiver = int.parse(map['receiver'].toString());
+      if (clients[channel] == null) {
+        clients[channel] = [receiver, sender];
+      } else {
+        clients[channel]!.add(receiver);
+        clients[channel]!.add(sender);
+      }
+
+      sinkChatList(channel, receiver);
     });
   }
 
@@ -73,6 +83,13 @@ class MessageRouters {
 
   static sinkChatList(WebSocketChannel channel, int reciverId) async {
     var r = await MessageQueries.getChatList(receiverId: reciverId);
+    channel.sink.add(jsonEncode(r.toJson()));
+  }
+
+  static sinkChatMessageList(
+      WebSocketChannel channel, int receiverId, int senderId) async {
+    var r = await MessageQueries.getChatMessages(
+        receiverId: receiverId, senderId: senderId);
     channel.sink.add(jsonEncode(r.toJson()));
   }
 }
