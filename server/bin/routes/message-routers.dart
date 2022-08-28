@@ -43,9 +43,6 @@ class MessageRouters {
   }
 
   static streamChat(WebSocketChannel channel) async {
-    //ACK
-    channel.sink.add('Chat Message Connected');
-
     //LISTEN FOR PAYLOADS FROM CLIENT
     channel.stream.listen((event) {
       var map = jsonDecode(event);
@@ -63,9 +60,6 @@ class MessageRouters {
   }
 
   static streamChatList(WebSocketChannel channel) async {
-    //ACK
-    channel.sink.add('Chat List Connected');
-
     //LISTEN FOR PAYLOADS FROM CLIENT
     channel.stream.listen((event) {
       var map = jsonDecode(event);
